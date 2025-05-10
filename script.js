@@ -177,8 +177,24 @@ window.onload = function () {
 
 function toggleMainFullscreen() {
   const main = document.querySelector('.main');
+  if (!main) return;
+
   if (!document.fullscreenElement) {
-    main.requestFullscreen().catch(err => {
+    main.requestFullscreen().then(() => {
+      main.style.margin = "0";
+      main.style.padding = "0";
+      main.style.width = "100vw";
+      main.style.height = "100vh";
+      main.style.overflow = "hidden";
+
+      const iframe = main.querySelector('iframe');
+      if (iframe) {
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "none";
+        iframe.style.display = "block";
+      }
+    }).catch(err => {
       alert(`Error attempting fullscreen: ${err.message}`);
     });
   } else {
@@ -188,9 +204,14 @@ function toggleMainFullscreen() {
 
 document.addEventListener('fullscreenchange', () => {
   const btn = document.querySelector('.fullscreen-toggle');
-  if (document.fullscreenElement) {
-    btn.textContent = '🡼'; 
-  } else {
-    btn.textContent = '⛶'; 
+  if (btn) {
+    btn.textContent = document.fullscreenElement ? '🡼' : '⛶';
+  }
+
+  const main = document.querySelector('.main');
+  if (main && !document.fullscreenElement) {
+    main.removeAttribute('style');
+    const iframe = main.querySelector('iframe');
+    if (iframe) iframe.removeAttribute('style');
   }
 });
